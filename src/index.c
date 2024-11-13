@@ -202,21 +202,28 @@ void mouse_click_handler(GLFWwindow* window, int button, int action, int mods) {
 	// vertex data
 	GLfloat vertices[] = 
 	{
-		// For First Square
-			// First triangle
+		// For First Square	
 			//x		y		z
-			-1.0f, 1.0f, 0.0f,// for left
-			0.0f, 1.0f, 0.0f, // for right
-			-1.0f, 0.0f, 0.0f, // for top
-	
-			// Second triangle
-			//x		y		z
-			0.0f, 1.0f, 0.0f,// for left
-			-1.0f, 0.0f, 0.0f, // for right
-			0.0f, 0.0f, 0.0f // for top
-
+			-1.0f, 1.0f, 0.0f,
+			0.0f, 1.0f, 0.0f, 
+			0.0f, 0.0f, 0.0f,
+			-1.0f, 0.0f, 0.0f, 
 
 	};
+
+	// Creating indeces for specific vertex
+	GLuint indices[] = {
+		0, 1, 3, // First Triangle
+		1, 2, 3  // Second Triangle
+	};
+
+	// IBO(Index Buffer Object) OR EBO(Element Buffer Object)
+	GLuint IBO;
+	glGenBuffers(1/*Id of buffer*/, &IBO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+
 
 	// VBO = Vertex Buffer Object
 	// VAO = Vertex Array Object
@@ -267,14 +274,18 @@ void mouse_click_handler(GLFWwindow* window, int button, int action, int mods) {
 		// Creating buffer
 		glBindVertexArray(VAO);
 		// Drawing first triangle
-		glDrawArrays(GL_TRIANGLES, 0/*Starting index*/, 3/*How many vertices*/);
+		
+		// Drawing elements or indices
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
+		glDrawElements(GL_TRIANGLES, 6/*Num of vertices*/, GL_UNSIGNED_INT, 0/*Offset*/);
+
+		// For drawing array
+		//glDrawArrays(GL_TRIANGLES, 0/*Starting index*/, 4/*How many vertices*/);
 		// Drawing second triangle
-		glDrawArrays(GL_TRIANGLES, 3, 3);
+		//glDrawArrays(GL_TRIANGLES, 3, 3);
+		
+		
 		glBindVertexArray(0);
-		
-		
-
-
 		// Swap the screen buffer
 		glfwSwapBuffers(window);
 
