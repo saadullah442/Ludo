@@ -18,6 +18,9 @@
     <ClCompile Include="src\index.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\random.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include=".gitignore" />

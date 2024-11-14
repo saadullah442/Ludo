@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\index.c" />
+    <ClCompile Include="src\random.c" />
   </ItemGroup>
   <ItemGroup>
     <None Include=".gitignore" />
