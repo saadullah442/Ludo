@@ -279,7 +279,7 @@ static GLuint rectangle4(GLFWwindow* window) {
 		"out vec4 color;\n"
 		"void main()\n"
 		"{\n"
-		"color = vec4(0.235f, 0.702f, 0.443f, 1.0f);\n"
+		"color = vec4(0.0f, 0.0f, 1.0f, 1.0f);\n"
 		"}\n\0";
 	GLuint shaderProgram, fragmentShader, vertexShader;
 	GLint success;
