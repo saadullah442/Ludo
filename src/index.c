@@ -335,6 +335,74 @@ static GLuint rectangle4(GLFWwindow* window) {
 
 }
 
+static GLuint center_rectangle(GLFWwindow* window) {
+	const char* VertexShaderSource =
+		"#version 330 core\n"
+		"layout (location=4) in vec3 position;\n"
+		"void main()\n"
+		"{\n"
+		"gl_Position = vec4(position.x, position.y, position.z, 1.0);\n"
+		"}\0";
+	const char* FragmentShaderSource =
+		"#version 330 core\n"
+		"out vec4 color;\n"
+		"void main()\n"
+		"{\n"
+		"color = vec4(1.0f, 1.0f, 1.0f, 1.0f);\n"
+		"}\n\0";
+	GLuint shaderProgram, fragmentShader, vertexShader;
+	GLint success;
+	GLchar infoLog[512];
+	// Vertex Shader
+	vertexShader = glCreateShader(GL_VERTEX_SHADER);
+	glShaderSource(vertexShader, 1, &VertexShaderSource, NULL);
+	glCompileShader(vertexShader);
+
+	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
+	if (!success) {
+		glGetShaderInfoLog(vertexShader, 512, NULL, &infoLog);
+		printf("Compilation error in vertex shader for rectangle 2\n");
+		printf("%s", infoLog);
+		glDeleteShader(vertexShader);
+	}
+
+
+	// Fragment Shader
+	fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+	glShaderSource(fragmentShader, 1, &FragmentShaderSource, NULL);
+	glCompileShader(fragmentShader);
+
+
+	// This func wil return fragment value to its parameter
+	glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
+
+	if (!success) {
+		glGetShaderInfoLog(fragmentShader, 512, NULL, &infoLog);
+		printf("Compilation error in vertex shader for rectangle 2\n");
+		printf("%s", infoLog);
+		glDeleteShader(fragmentShader);
+	}
+
+	// Shader program
+	shaderProgram = glCreateProgram();
+	glAttachShader(shaderProgram, vertexShader);
+	glAttachShader(shaderProgram, fragmentShader);
+	glLinkProgram(shaderProgram);
+
+	glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
+	if (!success) {
+		glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
+		printf("Linking failder\n");
+		printf("%s", infoLog);
+		glDeleteProgram(shaderProgram);
+	}
+	glDeleteShader(vertexShader);
+	glDeleteShader(fragmentShader);
+
+
+	return shaderProgram;
+}
+
  int main() {
 	
 	const int EXIT_FAILURE = -1;
@@ -397,6 +465,7 @@ static GLuint rectangle4(GLFWwindow* window) {
 	GLuint shaderProgram2 = rectangle2(window);
 	GLuint shaderProgram3 = rectangle3(window);
 	GLuint shaderProgram4 = rectangle4(window);
+	GLuint ShaderProgramCenterRect = center_rectangle(window);
 	/*---------------------------------------------------------------------------------*/
 	
 	
@@ -418,8 +487,8 @@ static GLuint rectangle4(GLFWwindow* window) {
 			//x		y		z
 			-1.0f, 1.0f, 0.0f, // Top left
 			-0.5f, 1.0f, 0.0f, // Top Middle
-			-0.5f, 0.0f, 0.0f, // On x-axis (In Middle)
-			-1.0f, 0.0f, 0.0f, // On x-axis (Left Most)
+			-0.5f, 0.25f, 0.0f, // On x-axis (In Middle)
+			-1.0f, 0.25f, 0.0f, // On x-axis (Left Most)
 	};
 	// Creating indeces for specific vertex of rectangle1
 	GLuint rect1_indices[] = {
@@ -463,8 +532,8 @@ static GLuint rectangle4(GLFWwindow* window) {
 		//x		y		z
 		0.5f, 1.0f, 0.0f, // Top Middle
 		1.0f, 1.0f, 0.0f, // Top Right
-		0.5f, 0.0f, 0.0f, // On x-axis
-		1.0f, 0.0f, 0.0f, // On x-axis (To Most Right)
+		0.5f, 0.25f, 0.0f, // On x-axis
+		1.0f, 0.25f, 0.0f, // On x-axis (To Most Right)
 		
 	};
 	// Creating indeces for specific vertex of rectangle2
@@ -491,7 +560,6 @@ static GLuint rectangle4(GLFWwindow* window) {
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid * ) 0);
 	
 	// Unbinding
-	glUseProgram(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
@@ -506,8 +574,8 @@ static GLuint rectangle4(GLFWwindow* window) {
 
 	GLfloat rect3_vertices[] = {
 		//x		y		z
-		0.5f, 0.0f, 0.0f, // x-axis (In Middle)
-		1.0f, 0.0f, 0.0f, // x-axis (To Most Right) 
+		0.5f, -0.25f, 0.0f, // x-axis (In Middle)
+		1.0f, -0.25f, 0.0f, // x-axis (To Most Right) 
 		0.5f, -1.0f, 0.0f, // Bottom
 		1.0f, -1.0f, 0.0f, // Bottom Right
 
@@ -536,7 +604,6 @@ static GLuint rectangle4(GLFWwindow* window) {
 	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
 
 	// Unbinding
-	glUseProgram(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
@@ -556,8 +623,8 @@ static GLuint rectangle4(GLFWwindow* window) {
 		//x		y		z
 		-1.0f, -1.0f, 0.0f, // Bottom Left
 		-0.5f, -1.0f, 0.0f, // Bottom Middle 
-		-0.5f, 0.0f, 0.0f, // On x-axis (In Middle)
-		-1.0f, 0.0f, 0.0f, // On x-axis (Left Most)
+		-0.5f, -0.25f, 0.0f, // On x-axis (In Middle)
+		-1.0f, -0.25f, 0.0f, // On x-axis (Left Most)
 
 	};
 	// Creating indeces for specific vertex of rectangle2
@@ -584,13 +651,48 @@ static GLuint rectangle4(GLFWwindow* window) {
 	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
 
 	// Unbinding
-	glUseProgram(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 
 
+	/* ------------------------------ Center Winning Box -------------------------------------------*/
 	
+	GLfloat center_rect_vertices[] = {
+		//x		  y		z
+		-0.25f,	0.25f,	0.0f, // Top Left
+		0.25f,	0.25f,	0.0f, // Top Right
+		0.25f,	-0.25f,	0.0f, // Bottom Right
+		-0.25,  -0.25f, 0.0f  // Bottom Left
+	};
+
+	GLuint center_rect_indices[] = {
+		0, 1, 3, // First Triangle
+		1, 2, 3  // Second Triangle
+	};
+
+	GLuint cen_IBO, cen_VBO, cen_VAO;
+
+	glGenVertexArrays(1, &cen_VAO);
+	glBindVertexArray(cen_VAO);
+
+	glGenBuffers(1, &cen_IBO);
+	glGenBuffers(1, &cen_VBO);
+
+	glBindBuffer(GL_ARRAY_BUFFER, cen_VBO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, cen_IBO);
+
+	glBufferData(GL_ARRAY_BUFFER, sizeof(center_rect_vertices), center_rect_vertices, GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(center_rect_indices), center_rect_indices, GL_STATIC_DRAW);
+
+	glEnableVertexAttribArray(4);
+	glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 3, (GLvoid*)0);
+
+	//Unbinding
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
+
 	
 
 	//glfwWindowShouldClose() checks if windows is open or closed
@@ -639,6 +741,13 @@ static GLuint rectangle4(GLFWwindow* window) {
 		glBindVertexArray(VAO4);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO4);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+		/*--------------------------- Center Rectangle -----------------------------------*/
+		glUseProgram(ShaderProgramCenterRect);
+		glBindVertexArray(cen_VAO);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, cen_IBO);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
 
 		// Unbinding
 		glBindVertexArray(0); 
